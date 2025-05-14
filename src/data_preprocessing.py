@@ -84,8 +84,8 @@ def main():
     data = load_dataset(train_file, labels=ternary_labels)
 
     # Balance and split data
-    train_size = 90000  # 27000 samples per label
-    test_size = 5000 # 333-334 samples per label
+    train_size = 80000  # 27000 samples per label
+    test_size = 6000 # 333-334 samples per label
     train_df, test_df = split_data(data, train_size, test_size, ternary_labels)
 
     # Save to CSV
