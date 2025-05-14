@@ -6,6 +6,7 @@ from tensorflow.keras.layers import SimpleRNN, Dense, Masking
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from tensorflow.keras.utils import to_categorical
+import pickle
 
 # 1. Load và xử lý dữ liệu
 df = pd.read_csv('data/processed/train.csv')
@@ -47,7 +48,7 @@ def texts_to_vectors(texts, model, max_len):
     return np.array(vector_sequences)
 
 # Padding theo độ dài câu dài nhất trong tập train
-max_length = 25
+max_length = 20
 X_train_vectors = texts_to_vectors(X_train, word2vec_model, max_length)
 X_test_vectors = texts_to_vectors(X_test, word2vec_model, max_length)
 
@@ -61,16 +62,17 @@ def build_rnn_model(input_shape, num_classes):
         SimpleRNN(128, activation='relu'),
         Dense(num_classes, activation='softmax')
     ])
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='sgd', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
+def predict_rnn(texts, max_length=20):
+    X_vectors = texts_to_vectors(texts, word2vec_model, max_length)
+    Y_pred_onehot = model.predict(X_vectors)
+    return np.argmax(Y_pred_onehot, axis=1)
 model = build_rnn_model((max_length, 100), 3)
-model.fit(X_train_vectors, Y_train_onehot, epochs=10, batch_size=32, verbose=1)
 
-# Dự đoán và tính accuracy
-Y_pred_proba = model.predict(X_test_vectors)
-Y_pred = np.argmax(Y_pred_proba, axis=1)
+model.fit(X_train_vectors, Y_train_onehot, epochs=20, batch_size=32, verbose=1)
 
-# So sánh với Y_test (là nhãn đã +1)
-accuracy = accuracy_score(Y_test, Y_pred)
-print(f"Accuracy on test set: {accuracy:.4f}")
+model.save('model/rnn_model.h5')
+word2vec_model.save('model/word2vec_model.model')
+

@@ -8,6 +8,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import CountVectorizer
+import pickle
 
 df = pd.read_csv('data/processed/train.csv')
 df = df.dropna(subset=["text"])  #Drop NaN rows: vì khi làm khảo sát thì có thể lấy các câu mà người dùng không điền gì
@@ -20,6 +21,11 @@ X_train=matranhoa.fit_transform(X) # lấy tất cả các từ khác nhau từ 
 model=MultinomialNB()
 model.fit(X_train,Y_train)
 
+with open('model/nb_model.pkl', 'wb') as f:
+    pickle.dump(model, f)
+with open('model/vectorizer.pkl', 'wb') as f:
+    pickle.dump(matranhoa, f)
+    
 def process(text):
     text = text.lower()
     words = word_tokenize(text)
@@ -29,20 +35,11 @@ def process(text):
 def polarity(text):
     text=process(text)
     text_new=matranhoa.transform([text])    
-    return model.predict(text_new)[0] 
+    return model.predict(text_new)[0]
 
-text_input=input()
-print(polarity(text_input))
+def predict_naive_bayes(texts):
+    texts_processed = [process(text) for text in texts]
+    X_vec = matranhoa.transform(texts_processed)
+    return model.predict(X_vec)
 
-#  Đánh giá Accuracy
-df1 = pd.read_csv('data/processed/test.csv')
-df1 = df1.dropna(subset=["text"])  
-X_test = df1["text"]
-Y_test = df1["sentiment"]
 
-X_test_vec = matranhoa.transform(X_test)  
-Y_pred = model.predict(X_test_vec)  
-correct_test = sum(Y_pred == Y_test)  
-accuracy = correct_test / len(X_test)  
-
-print("the accuracy of the model is:", accuracy)
