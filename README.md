@@ -10,7 +10,7 @@ SentimentAnalysis/
 │   ├── data_preprocessing.py   # Script tiền xử lý dữ liệu
 │   ├── naive_bayes_model.py    # Script huấn luyện và lưu mô hình Naive Bayes
 │   ├── rnn_model.py            # Script huấn luyện và lưu mô hình RNN
-│   └── evaluation.py           # Script đánh giá các mô hình đã huấn luyện
+│   └── main.py           # Script đánh giá các mô hình đã huấn luyện
 ├── requirements.txt            # Danh sách các thư viện Python cần thiết
 └── README.md                   # Tệp này
 ```
@@ -59,5 +59,5 @@ Các script chính nằm trong thư mục `src/`.
 4.  **Đánh giá mô hình:**
     Sau khi đã huấn luyện các mô hình, chạy script này để đánh giá hiệu suất của chúng trên tập dữ liệu kiểm tra.
     ```bash
-    python src/evaluation.py
+    python src/main.py
     ```
